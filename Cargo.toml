@@ -6,10 +6,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = {version ="4.3", features = ["derive"]}
-axum = "0.6"
-tokio = { version = "1.28", features = ["rt", "macros", "rt-multi-thread", "signal"] }
-tower-http = {version = "0.4", features = ["fs", "compression-gzip", "cors"]}
-tower = { version = "0.4", features = ["util"] }
+clap = { version = "4.5.4", features = ["derive"] }
+axum = "0.7.5"
+tokio = { version = "1.37.0", features = ["rt", "macros", "rt-multi-thread", "signal"] }
+tower-http = {version = "0.5.2", features = ["fs", "compression-gzip", "cors"]}
+tower = { version = "0.4.13", features = ["util"] }
 anyhow = "1.0"
-hyper = "0.14"
+hyper = "1.2.0"
+thiserror = "1.0.58"

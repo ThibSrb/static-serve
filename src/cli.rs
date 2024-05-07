@@ -1,8 +1,15 @@
-use clap::Parser;
+use clap::{builder::{styling::AnsiColor, Styles}, Parser};
 
 use crate::settings::{ServerSettings, ServiceSettings};
 
+const STYLES: Styles = Styles::styled()
+    .header(AnsiColor::Green.on_default().bold())
+    .usage(AnsiColor::Green.on_default().bold())
+    .literal(AnsiColor::Cyan.on_default().bold())
+    .placeholder(AnsiColor::Cyan.on_default());
+
 #[derive(Debug, Parser)]
+#[command(styles=STYLES)]
 pub struct Cli {
     #[arg(short, long, default_value_t = 3000)]
     /// Specifies the port on which the server should listen.

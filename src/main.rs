@@ -9,8 +9,7 @@ use anyhow::Result;
 use axum::Router;
 use clap::Parser;
 
-use hyper::Server;
-use tokio::signal;
+use tokio::{net::TcpListener, signal};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -21,9 +20,9 @@ async fn main() -> Result<()> {
     let app = Router::from(service_settings);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], server_settings.port));
+    let tcp_listener = TcpListener::bind(addr).await?;
 
-    Server::bind(&addr)
-        .serve(app.into_make_service())
+    axum::serve(tcp_listener, app)
         .with_graceful_shutdown(shutdown_signal())
         .await?;
 
