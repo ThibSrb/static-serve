@@ -1,10 +1,4 @@
-use std::net::SocketAddr;
-
 use axum::{routing::get, Router};
-use hyper::{
-    server::{conn::AddrIncoming, Builder},
-    Server,
-};
 
 use tower_http::{
     compression::CompressionLayer,
@@ -29,15 +23,16 @@ impl From<ServiceSettings> for Router {
         let service_serve_dir = ServeDir::new(value.directory)
             .append_index_html_on_directories(value.append_index_html_on_directories);
 
-        let service = match value.fallback_file {
-            Some(path) => get(move |request| {
+        let service = if let Some(path) = value.fallback_file {
+            get(move |request| {
                 serve_dir(
                     service_serve_dir.fallback(ServeFile::new(path)),
                     value.suffixes,
                     request,
                 )
-            }),
-            None => get(move |request| serve_dir(service_serve_dir, value.suffixes, request)),
+            })
+        } else {
+            get(move |request| serve_dir(service_serve_dir, value.suffixes, request))
         };
 
         let service = if value.compression {
@@ -66,11 +61,4 @@ impl From<ServiceSettings> for Router {
 
 pub struct ServerSettings {
     pub(crate) port: u16,
-}
-
-impl From<ServerSettings> for Builder<AddrIncoming> {
-    fn from(value: ServerSettings) -> Self {
-        let addr = SocketAddr::from(([127, 0, 0, 1], value.port));
-        Server::bind(&addr)
-    }
 }
