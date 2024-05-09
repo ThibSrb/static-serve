@@ -1,12 +1,7 @@
 use axum::body::Body;
 use hyper::{Request, Response, StatusCode};
-use thiserror::Error;
 use tower::{Service, ServiceExt};
 use tower_http::services::{fs::ServeFileSystemResponseBody, ServeDir};
-
-#[derive(Debug, Error)]
-#[error("File not found")]
-struct Error;
 
 pub async fn serve_dir<F: Clone>(
     serve_dir: ServeDir<F>,
