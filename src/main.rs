@@ -19,7 +19,7 @@ async fn main() -> Result<()> {
 
     let app = Router::from(service_settings);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], server_settings.port));
+    let addr = SocketAddr::from(([0, 0, 0, 0], server_settings.port));
     let tcp_listener = TcpListener::bind(addr).await?;
 
     axum::serve(tcp_listener, app)
