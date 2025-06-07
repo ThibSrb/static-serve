@@ -1,4 +1,7 @@
-use clap::{builder::{styling::AnsiColor, Styles}, Parser};
+use clap::{
+    Parser,
+    builder::{Styles, styling::AnsiColor},
+};
 
 use crate::settings::{ServerSettings, ServiceSettings};
 
@@ -28,8 +31,9 @@ pub struct Cli {
     pub allow_origin: Vec<String>,
 
     #[arg(long, alias = "dc", short = 'c', action, default_value_t = false)]
-    /// Disables compression for served files, which can reduce CPU usage but may result in larger file transfers.
-    pub disable_compression: bool,
+    /// Enable compression, which can increase CPU usage but may result in lower file transfers.
+    /// May slow down large file transfer.
+    pub enable_compression: bool,
 
     #[arg(long, short)]
     /// Sets a fallback file to serve when a requested file is not found.
@@ -48,7 +52,7 @@ impl Cli {
                 directory: self.directory,
                 suffixes: self.suffix,
                 allowed_origins: self.allow_origin,
-                compression: !self.disable_compression,
+                compression: self.enable_compression,
                 fallback_file: self.fallback_file,
                 append_index_html_on_directories: !self.no_auto_index,
             },
