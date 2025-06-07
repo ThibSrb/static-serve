@@ -1,4 +1,4 @@
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 
 use tower_http::{
     compression::CompressionLayer,
@@ -55,7 +55,7 @@ impl From<ServiceSettings> for Router {
             )
         };
 
-        Router::new().nest_service("/", service)
+        Router::new().fallback_service(service)
     }
 }
 

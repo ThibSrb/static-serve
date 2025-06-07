@@ -1,7 +1,7 @@
 use axum::body::Body;
 use hyper::{Request, Response, StatusCode};
 use tower::{Service, ServiceExt};
-use tower_http::services::{fs::ServeFileSystemResponseBody, ServeDir};
+use tower_http::services::{ServeDir, fs::ServeFileSystemResponseBody};
 
 pub async fn serve_dir<F: Clone>(
     serve_dir: ServeDir<F>,
