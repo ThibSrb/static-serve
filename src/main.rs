@@ -1,23 +1,41 @@
+#![deny(clippy::all)]
 mod cli;
 mod handler;
 mod settings;
 
-use std::net::SocketAddr;
-
 use crate::cli::Cli;
 use anyhow::Result;
-use axum::Router;
+use axum::{Router, extract::Request, response::Response};
 use clap::Parser;
-
+use std::{net::SocketAddr, time::Duration};
 use tokio::{net::TcpListener, signal};
+use tower_http::trace::TraceLayer;
+use tracing::Span;
+use tracing_subscriber::{EnvFilter, fmt::format::FmtSpan};
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
+        .with_span_events(FmtSpan::NONE)
+        .init();
     let cli = Cli::parse();
 
     let (server_settings, service_settings) = cli.into_settings();
 
-    let app = Router::from(service_settings);
+    let app = Router::from(service_settings).layer(
+        TraceLayer::new_for_http()
+            .make_span_with(|request: &Request<_>| {
+                tracing::info_span!(
+                    "http_request",
+                    method = ?request.method(),
+                    path = ?request.uri().path(),
+                )
+            })
+            .on_response(|res: &Response<_>, latency: Duration, span: &Span| {
+                tracing::info!(parent: span,status = %res.status().as_u16(), latency = ?latency);
+            }),
+    );
 
     let addr = SocketAddr::from(([0, 0, 0, 0], server_settings.port));
     let tcp_listener = TcpListener::bind(addr).await?;

@@ -12,9 +12,9 @@ const STYLES: Styles = Styles::styled()
     .placeholder(AnsiColor::Cyan.on_default());
 
 #[derive(Debug, Parser)]
-#[command(styles=STYLES)]
+#[command(styles=STYLES, version)]
 pub struct Cli {
-    #[arg(short, long, default_value_t = 3000)]
+    #[arg(short, long, default_value_t = 80)]
     /// Specifies the port on which the server should listen.
     pub port: u16,
 
